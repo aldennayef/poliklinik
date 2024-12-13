@@ -25,6 +25,24 @@ class Modelku extends CI_Model{
         return $this->db->get_where($tabel,$where);
     }
 
+    // public function generate_no_rm() {
+    //     // Ambil tahun dan bulan sekarang
+    //     $tahun_bulan = date('Ym'); // Format: 202411
+    
+    //     // Hitung jumlah pasien yang terdaftar dengan prefix tahun-bulan yang sama
+    //     $this->db->like('no_rm', $tahun_bulan, 'after'); // Menggunakan 'after' agar mencari yang setelah prefix tahun-bulan
+    //     $this->db->from('pasien');
+    //     $jumlah_pasien = $this->db->count_all_results(); // Menghitung jumlah pasien yang memiliki prefix yang sama
+    
+    //     // Posisi data adalah jumlah pasien + 1
+    //     $posisi_data = $jumlah_pasien + 1;
+        
+    //     // Buat NoRM dengan format tahunbulan-posisi tanpa padding angka
+    //     $norm = $tahun_bulan . '-' . $posisi_data; // Misalnya 202411-1, 202411-2
+        
+    //     return $norm;
+    // }
+
     public function generate_no_rm() {
         // Ambil tahun dan bulan sekarang
         $tahun_bulan = date('Ym'); // Format: 202411
@@ -36,12 +54,16 @@ class Modelku extends CI_Model{
     
         // Posisi data adalah jumlah pasien + 1
         $posisi_data = $jumlah_pasien + 1;
-        
-        // Buat NoRM dengan format tahunbulan-posisi tanpa padding angka
-        $norm = $tahun_bulan . '-' . $posisi_data; // Misalnya 202411-1, 202411-2
-        
+    
+        // Tambahkan padding untuk memastikan 3 digit di belakang
+        $posisi_data_padded = str_pad($posisi_data, 3, '0', STR_PAD_LEFT); // Menambahkan nol di depan jika kurang dari 3 digit
+    
+        // Buat NoRM dengan format tahunbulan-posisi
+        $norm = $tahun_bulan . '-' . $posisi_data_padded; // Misalnya 202411-001, 202411-002
+    
         return $norm;
     }
+    
 
     public function generate_no_antrian($id_jadwal, $tanggal) {
         // Cek jumlah pendaftar pada tanggal dan id_jadwal yang sama
