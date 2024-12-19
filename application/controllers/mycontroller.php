@@ -543,6 +543,18 @@ class Mycontroller extends CI_Controller {
         }
     }
 
+    public function get_detail_periksa_pasien(){
+        if($this->session->userdata('role')==='pasien'){
+            $id_daftar_poli = $this->input->post('daftar_poli_id');
+            $data['detail_periksa'] = $this->modelku->get_detail_periksa_pasien_by_id_daftar_poli_for_pasien($id_daftar_poli);
+            $data['obat'] = $this->modelku->get_detail_periksa_obat_pasien_by_id_daftar_poli_for_pasien($id_daftar_poli);
+            echo json_encode($data);
+        }
+        else{
+            redirect('home');
+        }
+    }
+
     // END
 
 
@@ -555,7 +567,7 @@ class Mycontroller extends CI_Controller {
 
 
     /* 
-    - HALAMAN DIRECT KHUSUS ROLE "DOKTER" KE HALAMAN PROFILE, INPUT JADWAL,
+    - HALAMAN DIRECT KHUSUS ROLE "DOKTER" KE HALAMAN PROFILE, INPUT JADWAL, PERIKSA PASIEN
     - JIKA ROLE SELAIN "DOKTER" MENCOBA MASUK, MAKA REDIRECT KE CONTROLLER "HOME" (MYCONTROLLER)
     */
 
@@ -635,6 +647,78 @@ class Mycontroller extends CI_Controller {
             redirect('home');
         }
     }
+
+    public function hal_edit_periksa_pasien($iddaftarpoli){
+        if($this->session->userdata('role')==='dokter'){
+            $comp['title'] = "Poliklinik Sehat Bersama | Edit Periksa Pasien";
+            $target = array(
+                'id' => $this->session->userdata('id')
+            );
+            $comp['user'] = $this->modelku->get_where_data_dokter_and_poli($target);
+            $comp['pasien'] = $this->modelku->get_detail_periksa_pasien_by_id_daftar_poli($iddaftarpoli)->row_array();
+            $comp['detail_periksa'] = $this->modelku->get_detail_periksa_pasien_by_id_daftar_poli($iddaftarpoli)->result_array();
+            $comp['obat'] = $this->modelku->get_data('obat');
+            // $comp['dokter'] = $this->modelku->get_data('dokter');
+            $this->load->view('template/navbar',$comp);
+            $this->load->view('template/sidebar',$comp);
+            $this->load->view('dokter_view_edit_periksa_pasien');
+            $this->load->view('template/footer');
+        }
+        else{
+            redirect('home');
+        }
+    }
+
+    public function hal_riwayat_periksa_pasien(){
+        if($this->session->userdata('role')==='dokter'){
+            $comp['title'] = "Poliklinik Sehat Bersama | Riwayat Periksa Pasien";
+            $target = array(
+                'id' => $this->session->userdata('id')
+            );
+            $comp['user'] = $this->modelku->get_where_data_dokter_and_poli($target);
+            // $comp['pasien'] = $this->modelku->get_detail_periksa_pasien_by_id_daftar_poli($iddaftarpoli)->row_array();
+            // $comp['detail_periksa'] = $this->modelku->get_detail_periksa_pasien_by_id_daftar_poli($iddaftarpoli)->result_array();
+            $comp['obat'] = $this->modelku->get_data('obat');
+            $comp['list_riwayat_pasien'] = $this->modelku->get_list_riwayat_periksa_pasien($this->session->userdata('id'));
+            // $comp['dokter'] = $this->modelku->get_data('dokter');
+            $this->load->view('template/navbar',$comp);
+            $this->load->view('template/sidebar',$comp);
+            $this->load->view('dokter_view_riwayat_periksa_pasien');
+            $this->load->view('template/footer');
+        }
+        else{
+            redirect('home');
+        }
+    }
+
+    public function hal_detail_riwayat_periksa_pasien($id_pasien) {
+        if ($this->session->userdata('role') === 'dokter') {
+            $comp['title'] = "Poliklinik Sehat Bersama | Riwayat Periksa Pasien";
+            $target = array(
+                'id' => $this->session->userdata('id')
+            );
+            $comp['user'] = $this->modelku->get_where_data_dokter_and_poli($target);
+            
+            // Ambil riwayat periksa pasien dan obat-obatan terkait
+            $comp['result_detail_riwayat_pasien'] = $this->modelku->get_detail_riwayat_pasien($id_pasien, $this->session->userdata('id'))->result_array();
+            
+            // Mengambil data detail obat per pasien dan daftar poli
+            $comp['row_detail_riwayat_pasien'] = $this->modelku->get_detail_riwayat_pasien($id_pasien, $this->session->userdata('id'))->row_array();
+            
+            // Mengambil data obat berdasarkan daftar poli
+            $iddaftarpoli = $comp['row_detail_riwayat_pasien']['daftar_poli_id'];
+            $comp['obat'] = $this->modelku->get_detail_periksa_obat_pasien_by_id_daftar_poli_for_pasien($iddaftarpoli);
+            
+            $this->load->view('template/navbar', $comp);
+            $this->load->view('template/sidebar', $comp);
+            $this->load->view('dokter_view_detail_riwayat_periksa_pasien');
+            $this->load->view('template/footer');
+        } else {
+            redirect('home');
+        }
+    }
+    
+    
 
     /*
     - ROLE DOKTER
@@ -786,8 +870,105 @@ class Mycontroller extends CI_Controller {
 
     /*
     - ROLE DOKTER
-    - MENERIMA DATA DARI HALAMAN "dokter_view_jadwal" UNTUK DIUPDATE/DIUBAH
+    - MENERIMA DATA DARI HALAMAN "dokter_view_periksa_pasien" UNTUK DIUPDATE/DIUBAH
     */
+
+    public function manage_periksa_pasien() {
+        $type = $this->input->post('type');
+        if ($this->session->userdata('role') === 'dokter') {
+            if ($type === 'tambah_data') {
+                // Ambil data yang dikirim dari frontend
+                $iddaftarpoli = $this->input->post('iddaftarpoli');
+                $tanggal = $this->input->post('tanggal');
+                $catatan = $this->input->post('catatan');
+                $biayaperiksa = $this->input->post('biayaperiksa');
+                $obatIds = $this->input->post('obat_ids'); // Array obatIds
+    
+                // Insert data ke tabel 'periksa'
+                $data_periksa = array(
+                    'id_daftar_poli' => $iddaftarpoli,
+                    'tgl_periksa' => $tanggal,
+                    'catatan' => $catatan,
+                    'biaya_periksa' => $biayaperiksa
+                );
+                if($this->modelku->insert_data('periksa', $data_periksa)){
+                    // Ambil id_periksa yang baru saja dimasukkan
+                    $id_periksa = $this->db->insert_id();
+                        
+                    // Insert data ke tabel 'detail_periksa' untuk setiap obat yang dipilih
+                    if (!empty($obatIds)) {
+                        foreach ($obatIds as $obatId) {
+                            $data_detail = array(
+                                'id_periksa' => $id_periksa,
+                                'id_obat' => $obatId
+                            );
+                            $this->modelku->insert_data('detail_periksa', $data_detail);
+                        }
+                    }
+
+                    $datas = array(
+                        'status' => 'Sudah diperiksa'
+                    );
+                    $where = array('id' => $iddaftarpoli);
+                    if($this->modelku->update_data('daftar_poli',$datas,$where)){
+                        // Kembalikan response sukses
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'success', 'message' => 'Pasien telah diperiksa.']);
+                    }
+                    else{
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'gagal', 'message' => 'Pasien gagal diperiksa.']);
+                    }
+                }
+                else{
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'gagal', 'message' => 'Pasien gagal diperiksa.']);
+                }
+            } elseif ($type === 'ubah_data') {
+                // Ambil data yang dikirim dari frontend
+                $iddaftarpoli = $this->input->post('iddaftarpoli');
+                $tanggal = $this->input->post('tanggal');
+                $catatan = $this->input->post('catatan');
+                $biayaperiksa = $this->input->post('biayaperiksa');
+                $obatIds = $this->input->post('obat_ids'); // Array obatIds
+                
+                // Update data ke tabel 'periksa'
+                $data_periksa = array(
+                    'tgl_periksa' => $tanggal,
+                    'catatan' => $catatan,
+                    'biaya_periksa' => $biayaperiksa
+                );
+                
+                $where = array('id_daftar_poli' => $iddaftarpoli);
+                
+                if($this->modelku->update_data('periksa', $data_periksa, $where)) {
+                    // Hapus detail_periksa yang lama
+                    $this->modelku->delete_data('detail_periksa', array('id_periksa' => $iddaftarpoli));
+                    
+                    // Insert ulang data detail_periksa untuk obat yang dipilih
+                    if (!empty($obatIds)) {
+                        foreach ($obatIds as $obatId) {
+                            $data_detail = array(
+                                'id_periksa' => $iddaftarpoli,
+                                'id_obat' => $obatId
+                            );
+                            $this->modelku->insert_data('detail_periksa', $data_detail);
+                        }
+                    }
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'success', 'message' => 'Data periksa pasien berhasil diubah.']);
+                } else {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'gagal', 'message' => 'Data periksa pasien gagal diubah.']);
+                }
+            } else {
+                
+            }
+        } else {
+            redirect('home');
+        }
+    }
+    
 
 
     /*

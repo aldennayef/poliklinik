@@ -105,6 +105,15 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="<?=base_url('riwayat_periksa_pasien')?>" class="nav-link">
+                        <i class="nav-icon fas fa-history"></i>
+                        <p>
+                            Riwayat Periksa Pasien
+                            <span class="badge badge-info right">2</span>
+                        </p>
+                    </a>
+                </li>
                 <?php }?>
                 <?php if($this->session->userdata('role')==='pasien'){?>
                 <li class="nav-header">Layanan</li>

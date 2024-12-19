@@ -1507,7 +1507,7 @@ $(document).ready(function() {
     });
 
     /*
-        JAVASCRIPT (JS) UNTUK ROLE PASIEN HALAMAN PERIKSA PASIEN
+        JAVASCRIPT (JS) UNTUK ROLE DOKTER HALAMAN PERIKSA PASIEN
     */
 
     // Fungsi untuk memperbarui tombol + dan - sesuai dengan jumlah dropdown
@@ -1548,7 +1548,7 @@ $(document).ready(function() {
                 <select class="form-control obat" name="obat[]">
                     <option value="">Pilih Obat</option>
                     <?php foreach($obat as $listobat){?>
-                        <option value="<?=$listobat['harga']?>" data-nama="<?=$listobat['nama_obat']?>"><?=$listobat['nama_obat']?> - <?=$listobat['kemasan']?> - <?=$listobat['harga']?></option>
+                        <option value="<?=$listobat['harga']?>" data-id="<?=$listobat['id']?>"><?=$listobat['nama_obat']?> - <?=$listobat['kemasan']?> - <?=$listobat['harga']?></option>
                     <?php }?>
                 </select>
                 <div class="input-group-append">
@@ -1562,12 +1562,12 @@ $(document).ready(function() {
         calculateTotal(); // Hitung total setiap kali dropdown ditambah
     });
 
-    // Ketika tombol - diklik
     $(document).on('click', '.remove-obat', function() {
         $(this).closest('.input-group').remove();
         updateButtons(); // Perbarui tombol setelah menghapus dropdown
         calculateTotal(); // Hitung total setelah dropdown dihapus
     });
+
 
     // Fungsi untuk menghitung total biaya obat
     function calculateTotal() {
@@ -1603,6 +1603,9 @@ $(document).ready(function() {
     updateButtons();
     calculateTotal();
 
+    /*
+    JAVASCRIPT (JS) UNTUK ROLE DOKTER SUBMIT PERIKSA PASIEN
+    */
     $('.btnDokterSubmitPeriksaPasien').click(function(event) {
         event.preventDefault();
 
@@ -1624,23 +1627,108 @@ $(document).ready(function() {
 
         // Jika ingin mengirim data ini ke server menggunakan AJAX
         $.ajax({
-            url: 'your-server-endpoint.php', // Ganti dengan URL endpoint server Anda
+            url: '<?=base_url("mycontroller/manage_periksa_pasien")?>', // Ganti dengan URL endpoint server Anda
             method: 'POST',
             data: {
                 iddaftarpoli: iddaftarpoli,
                 tanggal: tanggal,
                 catatan: catatan,
                 biayaperiksa: biayaperiksa,
-                obat_ids: obatIds // Kirimkan array obatIds
+                obat_ids: obatIds, // Kirimkan array obatIds
+                type: 'tambah_data'
             },
             success: function(response) {
-                console.log('Data berhasil dikirim', response);
+                if (response.status === 'success') {
+                    Toast.fire({
+                        icon: 'success',
+                        title: '<label style="color:green;">Periksa Pasien Sukses !</label><br>' +
+                            response.message
+                    })
+                    // Reload halaman setelah 3 detik (3000ms)
+                    setTimeout(function() {
+                            window.location.href = '<?=base_url("home")?>';
+                        },
+                        1500
+                    ); // Waktu delay sebelum reload (dalam milidetik)
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: '<label style="color:red;">Periksa Pasien Gagal !</label><br>' +
+                            response.message
+                    })
+                    return;
+                }
             },
             error: function(xhr, status, error) {
                 console.log('Terjadi kesalahan:', error);
             }
         });
     });
+
+
+    /*
+        JAVASCRIPT (JS) UNTUK ROLE DOKTER HALAMAN EDIT PERIKSA PASIEN (DETAIL PERIKSA)
+    */
+
+    $('.btnDokterSubmitEditPeriksaPasien').click(function(event) {
+        event.preventDefault();
+
+        // Ambil nilai input lainnya
+        var iddaftarpoli = $('[name=iddaftarpoli]').val();
+        var tanggal = $('[name=tanggal]').val();
+        var catatan = $('[name=catatan]').val();
+        var biayaperiksa = $('[name=biayaperiksa]').val();
+
+        // Ambil data-id dari setiap dropdown obat yang dipilih
+        var obatIds = [];
+        $('.obat').each(function() {
+            var selectedOption = $(this).find('option:selected');
+            var obatId = selectedOption.data('id');
+            if (obatId) {
+                obatIds.push(obatId); // Simpan id obat ke dalam array
+            }
+        });
+
+        // Jika ingin mengirim data ini ke server menggunakan AJAX
+        $.ajax({
+            url: '<?=base_url("mycontroller/manage_periksa_pasien")?>', // Ganti dengan URL endpoint server Anda
+            method: 'POST',
+            data: {
+                iddaftarpoli: iddaftarpoli,
+                tanggal: tanggal,
+                catatan: catatan,
+                biayaperiksa: biayaperiksa,
+                obat_ids: obatIds, // Kirimkan array obatIds
+                type: 'ubah_data'
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    Toast.fire({
+                        icon: 'success',
+                        title: '<label style="color:green;">Periksa Pasien Sukses !</label><br>' +
+                            response.message
+                    })
+                    // Reload halaman setelah 3 detik (3000ms)
+                    setTimeout(function() {
+                            window.location.href = '<?=base_url("home")?>';
+                        },
+                        1500
+                    ); // Waktu delay sebelum reload (dalam milidetik)
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: '<label style="color:red;">Periksa Pasien Gagal !</label><br>' +
+                            response.message
+                    })
+                    return;
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Terjadi kesalahan:', error);
+            }
+        });
+    });
+
 
 
     /*
@@ -1750,6 +1838,49 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('.btnPasienDetailPeriksa').click(function(event) {
+        event.preventDefault();
+
+        var id_daftar_poli = $(this).data('id');
+
+        $.ajax({
+            url: '<?=base_url("mycontroller/get_detail_periksa_pasien")?>',
+            type: 'post',
+            data: {
+                daftar_poli_id: id_daftar_poli
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    // Jika data ditemukan, isi modal dengan data yang diterima
+                    $('#poli_detail').text(data.detail_periksa.nama_poli);
+                    $('#dokter_detail').text(data.detail_periksa.dokter_nama);
+                    $('#tanggal_detail').text(data.detail_periksa.tgl_periksa);
+                    $('#keluhan_detail').text(data.detail_periksa.keluhan);
+                    $('#catatan_dokter_detail').text(data.detail_periksa.catatan);
+                    $('#biaya_periksa_detail').text(data.detail_periksa.biaya_periksa);
+
+                    // Menampilkan obat yang diberikan
+                    var obatList = '';
+                    $.each(data.obat, function(index, obat) {
+                        obatList += '<li>' + obat.nama_obat + ' - ' + obat.harga +
+                            ' (' + obat.kemasan + ')</li>';
+                    });
+                    $('#obat_detail').html(obatList);
+
+                    // Tampilkan modal
+                    $('#modal-detailperiksa').modal('show');
+                } else {
+                    alert('Data not found');
+                }
+            },
+            error: function() {
+                alert('Kesalahan dalam mengirim data');
+            }
+        })
+    });
+
 
 
 
