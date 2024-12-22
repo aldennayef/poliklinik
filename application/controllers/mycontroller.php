@@ -943,13 +943,14 @@ class Mycontroller extends CI_Controller {
                 
                 if($this->modelku->update_data('periksa', $data_periksa, $where)) {
                     // Hapus detail_periksa yang lama
-                    $this->modelku->delete_data('detail_periksa', array('id_periksa' => $iddaftarpoli));
+                    $dataPeriksa = $this->modelku->get_where_data('periksa', ['id_daftar_poli' => $iddaftarpoli])->row_array();
+                    $this->modelku->delete_data('detail_periksa', array('id_periksa' => $dataPeriksa['id']));
                     
                     // Insert ulang data detail_periksa untuk obat yang dipilih
                     if (!empty($obatIds)) {
                         foreach ($obatIds as $obatId) {
                             $data_detail = array(
-                                'id_periksa' => $iddaftarpoli,
+                                'id_periksa' => $dataPeriksa['id'],
                                 'id_obat' => $obatId
                             );
                             $this->modelku->insert_data('detail_periksa', $data_detail);

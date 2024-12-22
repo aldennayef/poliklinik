@@ -61,12 +61,13 @@
                                                     <i class="fa fa-stethoscope"></i> Periksa</button></a>
                                             <?php } else{?>
                                             <a href="<?=base_url('edit_periksa_pasien/'.$lp['daftar_poli_id'])?>"><button
-                                                    type="button" class="btn btn-danger btn-sm">
+                                                    type="button" class="btn btn-warning btn-sm">
                                                     <i class="fa fa-info"></i> Detail Periksa</button>
                                                 <?php }?>
                                         </td>
                                     </tr>
                                     <?php }?>
+                                </tbody>
                             </table>
                         </div>
                         <!-- /.card-body -->

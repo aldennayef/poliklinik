@@ -9,7 +9,6 @@
     /* Memberikan jarak di kiri tombol */
 }
 
-}
 </style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">

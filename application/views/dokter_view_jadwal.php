@@ -107,10 +107,6 @@
                                             <button type="button" class="btn btn-info btn-sm btnDokterEditJadwal"
                                                 data-id="<?=$datajadwal['id']?>" data-toggle="modal"
                                                 data-target="#modal-ubahjadwal"><i class="fa fa-edit"></i> Edit</button>
-                                            |
-                                            <button type="button" class="btn btn-danger btn-sm btnDokterHapusJadwal"
-                                                data-id="<?=$datajadwal['id']?>"><i class="fa fa-trash"></i>
-                                                Hapus</button>
                                         </td>
                                     </tr>
                                     <?php }?>
@@ -167,18 +163,6 @@
                         <label for="jamselesai">Jam Selesai</label>
                         <input type="time" class="form-control" id="ubahjamselesai" name="ubahjamselesai"
                             placeholder="Masukkan Jam Selesai">
-                    </div>
-                    <div class="form-group">
-                        <label for="statusobat">Status</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="radioaktif" name="radio" value="aktif">
-                            <label class="form-check-label">Aktif</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" id="radiotidakaktif" name="radio"
-                                value="tidak aktif">
-                            <label class="form-check-label">Tidak Aktif</label>
-                        </div>
                     </div>
                 </form>
 

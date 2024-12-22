@@ -117,6 +117,7 @@ class Modelku extends CI_Model{
         $this->db->from('dokter');
         $this->db->join('jadwal_periksa','dokter.id = jadwal_periksa.id_dokter');
         $this->db->where('dokter.id_poli',$idpoli);
+        $this->db->where('jadwal_periksa.status','aktif');
         return $this->db->get()->result_array();
     }
 

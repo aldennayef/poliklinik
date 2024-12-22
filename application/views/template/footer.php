@@ -1310,7 +1310,22 @@ $(document).ready(function() {
     $('.btnDokterToggleJadwal').click(function(event) {
         var status = $(this).prop('checked') ? 'aktif' : 'tidak aktif';
         var id_jadwal = $(this).attr('id').replace('statusSwitch',
-            ''); // Ambil ID jadwal dari ID toggle
+        ''); // Ambil ID jadwal dari ID toggle
+
+        // Cek apakah ada jadwal lain yang aktif jika ingin mengaktifkan jadwal ini
+        if (status === 'aktif') {
+            var otherActive = $('.btnDokterToggleJadwal:checked').not(this).length;
+
+            if (otherActive > 0) {
+                // Batalkan perubahan dan tampilkan alert
+                $(this).prop('checked', false);
+                Toast.fire({
+                    icon: 'warning',
+                    title: '<label style="color:orange;">Perhatian !</label><br>Hanya satu jadwal yang dapat aktif!'
+                });
+                return; // Hentikan proses
+            }
+        }
 
         // Kirim request AJAX untuk update status
         $.ajax({
@@ -1325,17 +1340,15 @@ $(document).ready(function() {
                 if (response.status === 'success') {
                     Toast.fire({
                         icon: 'success',
-                        title: '<label style="color:green;">Perubahan Jadwal Sukses !</label><br>' +
+                        title: '<label style="color:green;">Perubahan Jadwal Sukses!</label><br>' +
                             response.message
                     });
-                    return;
                 } else {
                     Toast.fire({
                         icon: 'error',
-                        title: '<label style="color:red;">Perubahan Jadwal Gagal !</label><br>' +
+                        title: '<label style="color:red;">Perubahan Jadwal Gagal!</label><br>' +
                             response.message
                     });
-                    return;
                 }
             },
             error: function() {
@@ -1343,6 +1356,7 @@ $(document).ready(function() {
             }
         });
     });
+
 
     $('.btnDokterEditJadwal').click(function(event) {
         event.preventDefault();
@@ -1452,59 +1466,59 @@ $(document).ready(function() {
         });
     });
 
-    $('.btnDokterHapusJadwal').click(function(event) {
-        event.preventDefault();
+    // $('.btnDokterHapusJadwal').click(function(event) {
+    //     event.preventDefault();
 
-        var id = $(this).data('id');
-        Swal.fire({
-            title: 'Hapus Jadwal Periksa?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, Hapus',
-            cancelButtonText: 'Batal',
-        }).then((result) => {
-            if (result.isConfirmed) {
+    //     var id = $(this).data('id');
+    //     Swal.fire({
+    //         title: 'Hapus Jadwal Periksa?',
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#3085d6',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Ya, Hapus',
+    //         cancelButtonText: 'Batal',
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
 
-                $.ajax({
-                    url: '<?=base_url("mycontroller/manage_jadwal_dokter")?>',
-                    type: 'post',
-                    data: {
-                        idjadwal: id,
-                        type: 'hapus_data'
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            Toast.fire({
-                                icon: 'success',
-                                title: '<label style="color:green;">Hapus Jadwal Periksa Sukses !</label><br>' +
-                                    response.message
-                            })
-                            // Reload halaman setelah 3 detik (3000ms)
-                            setTimeout(function() {
-                                    location
-                                        .reload(); // Untuk me-reload halaman
-                                },
-                                1500
-                            ); // Waktu delay sebelum reload (dalam milidetik)
-                        } else {
-                            Toast.fire({
-                                icon: 'error',
-                                title: '<label style="color:red;">Hapus Jadwal Periksa Gagal !</label><br>' +
-                                    response.message
-                            })
-                            return;
-                        }
-                    },
-                    error: function() {
-                        Swal.fire('Error', 'Terjadi kesalahan saat mengirim data',
-                            'error');
-                    }
-                });
-            }
-        });
-    });
+    //             $.ajax({
+    //                 url: '<?=base_url("mycontroller/manage_jadwal_dokter")?>',
+    //                 type: 'post',
+    //                 data: {
+    //                     idjadwal: id,
+    //                     type: 'hapus_data'
+    //                 },
+    //                 success: function(response) {
+    //                     if (response.status === 'success') {
+    //                         Toast.fire({
+    //                             icon: 'success',
+    //                             title: '<label style="color:green;">Hapus Jadwal Periksa Sukses !</label><br>' +
+    //                                 response.message
+    //                         })
+    //                         // Reload halaman setelah 3 detik (3000ms)
+    //                         setTimeout(function() {
+    //                                 location
+    //                                     .reload(); // Untuk me-reload halaman
+    //                             },
+    //                             1500
+    //                         ); // Waktu delay sebelum reload (dalam milidetik)
+    //                     } else {
+    //                         Toast.fire({
+    //                             icon: 'error',
+    //                             title: '<label style="color:red;">Hapus Jadwal Periksa Gagal !</label><br>' +
+    //                                 response.message
+    //                         })
+    //                         return;
+    //                     }
+    //                 },
+    //                 error: function() {
+    //                     Swal.fire('Error', 'Terjadi kesalahan saat mengirim data',
+    //                         'error');
+    //                 }
+    //             });
+    //         }
+    //     });
+    // });
 
     /*
         JAVASCRIPT (JS) UNTUK ROLE DOKTER HALAMAN PERIKSA PASIEN
