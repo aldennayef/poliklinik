@@ -1163,7 +1163,6 @@ $(document).ready(function() {
         var nama = $('[name=namaProfile]').val();
         var alamat = $('[name=alamatProfile]').val();
         var nohp = $('[name=nohpProfile]').val();
-        var poli = $('[name=poliProfile]').val();
 
         if (nama.length == 0) {
             Toast.fire({
@@ -1189,13 +1188,6 @@ $(document).ready(function() {
             return;
         }
 
-        if (poli === 'Pilih Tempat Poli' || poli === '') {
-            Toast.fire({
-                icon: 'error',
-                title: '<label style="color:red;">Update Profile Gagal !</label><br>Tempat poli wajib diisi.'
-            })
-            return;
-        }
 
         $.ajax({
             url: '<?=base_url("mycontroller/manage_profile_dokter")?>',
@@ -1205,7 +1197,6 @@ $(document).ready(function() {
                 namaProfile: nama,
                 alamatProfile: alamat,
                 nohpProfile: nohp,
-                poliProfile: poli
             },
             success: function(response) {
                 if (response.status === 'success') {

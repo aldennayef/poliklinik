@@ -731,7 +731,6 @@ class Mycontroller extends CI_Controller {
                 'nama' => $this->input->post('namaProfile'),
                 'alamat' => $this->input->post('alamatProfile'),
                 'no_hp' => $this->input->post('nohpProfile'),
-                'id_poli' => $this->input->post('poliProfile'),
             );
 
             $target = array(
@@ -780,7 +779,7 @@ class Mycontroller extends CI_Controller {
                     'hari' => $this->input->post('hariDokter'),
                     'jam_mulai' => $this->input->post('jamMulaiDokter'),
                     'jam_selesai' => $this->input->post('jamSelesaiDokter'),
-                    'status' => 'aktif',
+                    'status' => 'tidak aktif',
                 );
     
                 if($this->modelku->insert_data('jadwal_periksa',$data)){
