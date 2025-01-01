@@ -103,11 +103,11 @@
                                                     for="statusSwitch<?=$datajadwal['id']?>">Aktif</label>
                                             </div>
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                             <button type="button" class="btn btn-info btn-sm btnDokterEditJadwal"
                                                 data-id="<?=$datajadwal['id']?>" data-toggle="modal"
                                                 data-target="#modal-ubahjadwal"><i class="fa fa-edit"></i> Edit</button>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                     <?php }?>
                                 </tbody>
