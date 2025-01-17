@@ -353,3 +353,20 @@ public function index() {
     * Buka file db.sql
     * Bagian CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;  diganti menjadi CHARSET=utf8 COLLATE=utf8_general_ci;
     * atau CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci; diganti menjadi CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+5. Cara ganti versi php ke 8.1.10 (jika diperlukan) :
+    * Download php di drive Bahan Sertifikasi Web
+    * Buka folder xampp. rename folder php menjadi php_old (jaga jaga jika ada error)
+    * Extract zip php yg didownload, copy foldernya ke xampp. Nama folder harus "php"
+    * Ke folder xampp > apache > conf > extra, file httpd-xampp.conf dicopy agar menjadi 2. File copy nya direname httpd-xampp-old.conf
+    * File httpd-xampp.conf yang satunya (asli), dibuka di notepad
+    * Bagian LoadFile "C:/xampp/php/php7ts.dll"
+        LoadFile "C:/xampp/php/libpq.dll"
+        LoadModule php7_module "C:/xampp/php/php7apache2_4.dll"
+
+    * Diubah menjadi LoadFile "C:/xampp/php/php8ts.dll"
+        LoadFile "C:/xampp/php/libpq.dll"
+        LoadModule php7_module "C:/xampp/php/php8apache2_4.dll"
+
+    * Semua teks "php7_module" diganti menjadi "php_module"
+    * save, restart xampp
