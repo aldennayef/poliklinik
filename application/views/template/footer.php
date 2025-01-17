@@ -1567,6 +1567,31 @@ $(document).ready(function() {
         calculateTotal(); // Hitung total setiap kali dropdown ditambah
     });
 
+    // JIKA ADA ERROR KARENA BEDA VERSI PHP . KOMEN ATAS, UNKOMEN BAWAH
+    // $(document).on('click', '.add-obat', function() {
+    //     var newObatSelect = `
+    //         <div class="input-group mt-2">
+    //             <select class="form-control obat" name="obat[]">
+    //                 <option value="">Pilih Obat</option>
+    //                 <?php if(isset($obat) && is_array($obat)) { ?>
+    //                     <?php foreach($obat as $listobat) { ?>
+    //                         <option value="<?=htmlspecialchars($listobat['harga'])?>" data-id="<?=htmlspecialchars($listobat['id'])?>"><?=htmlspecialchars($listobat['nama_obat'])?> - <?=htmlspecialchars($listobat['kemasan'])?> - <?=htmlspecialchars($listobat['harga'])?></option>
+    //                     <?php } ?>
+    //                 <?php } else { ?>
+    //                     <option value="">Data obat tidak tersedia</option>
+    //                 <?php } ?>
+    //             </select>
+    //             <div class="input-group-append">
+    //                 <button type="button" class="btn btn-danger btn-sm remove-obat">-</button>
+    //                 <button type="button" class="btn btn-success btn-sm add-obat">+</button>
+    //             </div>
+    //         </div>
+    //     `;
+    //     $('#obat-container').append(newObatSelect);
+    //     updateButtons(); // Perbarui tombol setelah menambah dropdown
+    //     calculateTotal(); // Hitung total setiap kali dropdown ditambah
+    // });
+
     $(document).on('click', '.remove-obat', function() {
         $(this).closest('.input-group').remove();
         updateButtons(); // Perbarui tombol setelah menghapus dropdown
